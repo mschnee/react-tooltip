@@ -512,8 +512,9 @@ var ReactTooltip = function (_Component) {
     value: function updatePosition() {
       var node = _reactDom2.default.findDOMNode(this);
 
-      var tipWidth = node.clientWidth;
-      var tipHeight = node.clientHeight;
+      var style = window.getComputedStyle(node);
+      var tipWidth = node.clientWidth + parseFloat(style.marginLeft) + parseFloat(style.marginRight) + parseFloat(style.paddingLeft) + parseFloat(style.paddingRight);
+      var tipHeight = node.clientHeight + parseFloat(style.marginTop) + parseFloat(style.marginBottom) + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom);
       var _state2 = this.state;
       var effect = _state2.effect;
       var place = _state2.place;
@@ -601,35 +602,31 @@ var ReactTooltip = function (_Component) {
         return styleTop + tipHeight >= windowHeight && y + offsetFromEffect['top'].y + yPosition >= 0;
       };
 
-      /* We want to make sure the place we switch to will not go outside either */
-      var outside = function outside(place) {
-        return outsideTop(place) || outsideRight(place) || outsideBottom(place) || outsideLeft(place);
-      };
-
       /* We check each side and switch if the new place will be in bounds */
       if (outsideLeft(place)) {
-        if (!outside('right')) {
+        if (outsideRight(place)) {
           this.setState({
             place: 'right'
           });
           return;
         }
       } else if (outsideRight(place)) {
-        if (!outside('left')) {
+        if (!outsideLeft(place)) {
+          console.log('is outside right');
           this.setState({
             place: 'left'
           });
           return;
         }
       } else if (outsideTop(place)) {
-        if (!outside('bottom')) {
+        if (!outsideBottom(place)) {
           this.setState({
             place: 'bottom'
           });
           return;
         }
       } else if (outsideBottom(place)) {
-        if (!outside('top')) {
+        if (!outsideTop(place)) {
           this.setState({
             place: 'top'
           });
@@ -666,6 +663,7 @@ var ReactTooltip = function (_Component) {
 
       var tooltipClass = (0, _classnames2.default)('__react_component_tooltip', { 'show': this.state.show }, { 'border': this.state.border }, { 'place-top': this.state.place === 'top' }, { 'place-bottom': this.state.place === 'bottom' }, { 'place-left': this.state.place === 'left' }, { 'place-right': this.state.place === 'right' }, { 'type-dark': this.state.type === 'dark' }, { 'type-success': this.state.type === 'success' }, { 'type-warning': this.state.type === 'warning' }, { 'type-error': this.state.type === 'error' }, { 'type-info': this.state.type === 'info' }, { 'type-light': this.state.type === 'light' });
 
+      console.log(this.state);
       if (html) {
         return _react2.default.createElement('div', { className: tooltipClass + ' ' + extraClass, 'data-id': 'tooltip', dangerouslySetInnerHTML: { __html: placeholder } });
       } else {

@@ -360,8 +360,9 @@ class ReactTooltip extends Component {
   updatePosition () {
     let node = ReactDOM.findDOMNode(this)
 
-    let tipWidth = node.clientWidth
-    let tipHeight = node.clientHeight
+    let style = window.getComputedStyle(node)
+    let tipWidth = node.clientWidth + parseFloat(style.marginLeft) + parseFloat(style.marginRight) + parseFloat(style.paddingLeft) + parseFloat(style.paddingRight)
+    let tipHeight = node.clientHeight + parseFloat(style.marginTop) + parseFloat(style.marginBottom) + parseFloat(style.paddingTop) + parseFloat(style.paddingBottom)
     let { effect, place, offset } = this.state
     let offsetFromEffect = {}
 
@@ -445,35 +446,31 @@ class ReactTooltip extends Component {
       return styleTop + tipHeight >= windowHeight && y + offsetFromEffect['top'].y + yPosition >= 0
     }
 
-    /* We want to make sure the place we switch to will not go outside either */
-    const outside = (place) => {
-      return outsideTop(place) || outsideRight(place) || outsideBottom(place) || outsideLeft(place)
-    }
-
     /* We check each side and switch if the new place will be in bounds */
     if (outsideLeft(place)) {
-      if (!outside('right')) {
+      if (outsideRight(place)) {
         this.setState({
           place: 'right'
         })
         return
       }
     } else if (outsideRight(place)) {
-      if (!outside('left')) {
+      if (!outsideLeft(place)) {
+        console.log('is outside right')
         this.setState({
           place: 'left'
         })
         return
       }
     } else if (outsideTop(place)) {
-      if (!outside('bottom')) {
+      if (!outsideBottom(place)) {
         this.setState({
           place: 'bottom'
         })
         return
       }
     } else if (outsideBottom(place)) {
-      if (!outside('top')) {
+      if (!outsideTop(place)) {
         this.setState({
           place: 'top'
         })
